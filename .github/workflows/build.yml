@@ -29,6 +29,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Accept Android SDK Licenses Automatically
+        run: |
+          yes | sdkmanager --licenses || true
+
       - name: Generate Android Native Files
         run: npx expo prebuild --platform android --no-interactive
 
