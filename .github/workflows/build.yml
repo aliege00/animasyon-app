@@ -26,20 +26,9 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: true
-
-      - name: Bypass SDK Licenses Manually
+      - name: Setup Android SDK & Accept Licenses
         run: |
-          ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}
-          mkdir -p "$ANDROID_HOME/licenses"
-          echo "24333f8a43b682417c57954d879482d8c360144f" > "$ANDROID_HOME/licenses/android-sdk-license"
-          echo "d56f5187479451eabfce1fb7959db0669943a138" >> "$ANDROID_HOME/licenses/android-sdk-license"
-          echo "8d43105504856ea03c144574ef8a8babf4544f15" >> "$ANDROID_HOME/licenses/android-sdk-license"
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
-          echo "33b6a2b64607f11b759f320ef9dff4ae5c47d97a" > "$ANDROID_HOME/licenses/google-gdk-license"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Generate Android Native Files
         run: npx expo prebuild --platform android --no-interactive
@@ -48,7 +37,7 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleRelease --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
